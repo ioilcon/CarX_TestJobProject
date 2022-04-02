@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 
 public class GuidedProjectile : MonoBehaviour {
@@ -9,6 +10,7 @@ public class GuidedProjectile : MonoBehaviour {
 	void Update () {
 		if (m_target == null) {
 			Destroy (gameObject);
+			this.gameObject.SetActive(false);
 			return;
 		}
 
@@ -28,6 +30,7 @@ public class GuidedProjectile : MonoBehaviour {
 		if (monster.m_hp <= 0) {
 			Destroy (monster.gameObject);
 		}
-		Destroy (gameObject);
+
+		this.gameObject.SetActive(false);
 	}
 }

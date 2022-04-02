@@ -5,8 +5,14 @@ public class SimpleTower : MonoBehaviour {
 	public float m_shootInterval = 0.5f;
 	public float m_range = 4f;
 	public GameObject m_projectilePrefab;
+	private ObjectPool<GuidedProjectile> _pool;
 
 	private float m_lastShotTime = -0.5f;
+	
+	private void Start()
+	{
+		_pool = gameObject.GetComponent<GuidedProjectilesPool>().Pool;
+	}
 	
 	void Update () {
 		if (m_projectilePrefab == null)
@@ -20,9 +26,11 @@ public class SimpleTower : MonoBehaviour {
 				continue;
 
 			// shot
-			var projectile = Instantiate(m_projectilePrefab, transform.position + Vector3.up * 1.5f, Quaternion.identity) as GameObject;
-			var projectileBeh = projectile.GetComponent<GuidedProjectile> ();
-			projectileBeh.m_target = monster.gameObject;
+			var projectile = _pool.GetFreeElement();
+			var projectileTransform = projectile.transform;
+			projectileTransform.position = transform.position + Vector3.up * 1.5f;
+			projectileTransform.rotation = Quaternion.identity;
+			projectile.GetComponent<GuidedProjectile>().m_target = monster.gameObject;
 
 			m_lastShotTime = Time.time;
 		}

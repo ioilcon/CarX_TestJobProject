@@ -8,15 +8,14 @@ using Object = UnityEngine.Object;
 public class ObjectPool<T> where T : MonoBehaviour
 {
     private T Prefab { get; }
-    private bool AutoExpand { get; }
+    private bool AutoExpand { get; set; }
     private Transform Container {get; }
     
     private List<T> _pool;
     
-    public ObjectPool(T prefab, int poolSize, bool autoExpand, Transform container = null)
+    public ObjectPool(T prefab, int poolSize, Transform container = null)
     {
         this.Prefab = prefab;
-        AutoExpand = autoExpand;
         this.Container = container;
         
         this.CreatePool(poolSize);

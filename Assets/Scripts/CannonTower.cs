@@ -6,8 +6,15 @@ public class CannonTower : MonoBehaviour {
 	public float m_range = 4f;
 	public GameObject m_projectilePrefab;
 	public Transform m_shootPoint;
+	
+	private ObjectPool<CannonProjectile> _pool;
 
 	private float m_lastShotTime = -0.5f;
+	
+	private void Start()
+	{
+		_pool = gameObject.GetComponent<CannonProjectilesPool>().Pool;
+	}
 
 	void Update () {
 		if (m_projectilePrefab == null || m_shootPoint == null)
@@ -21,7 +28,10 @@ public class CannonTower : MonoBehaviour {
 				continue;
 
 			// shot
-			Instantiate(m_projectilePrefab, m_shootPoint.position, m_shootPoint.rotation);
+			var projectile = _pool.GetFreeElement();
+			var projectileTransform = projectile.transform;
+			projectileTransform.position = m_shootPoint.position;
+			projectileTransform.rotation = m_shootPoint.rotation;
 
 			m_lastShotTime = Time.time;
 		}

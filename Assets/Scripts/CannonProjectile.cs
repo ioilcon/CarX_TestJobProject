@@ -1,12 +1,28 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
+using UnityEngine.Serialization;
 
 public class CannonProjectile : MonoBehaviour {
 	public float m_speed = 0.2f;
 	public int m_damage = 10;
 
+	[SerializeField] private float wickLength = 5.0f;
+	private float _currentWickLength;
+
+	private void Start()
+	{
+		_currentWickLength = wickLength;
+	}
+
 	void Update () {
 		var translation = transform.forward * m_speed;
+		_currentWickLength -= Time.deltaTime;
+		if (_currentWickLength < 0)
+		{
+			_currentWickLength = wickLength;
+			this.gameObject.SetActive(false);
+		}
 		transform.Translate (translation);
 	}
 
@@ -19,6 +35,7 @@ public class CannonProjectile : MonoBehaviour {
 		if (monster.m_hp <= 0) {
 			Destroy (monster.gameObject);
 		}
-		Destroy (gameObject);
+		
+		this.gameObject.SetActive(false);
 	}
 }

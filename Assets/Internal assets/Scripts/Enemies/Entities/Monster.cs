@@ -18,8 +18,9 @@ public class Monster : MonoBehaviour {
 		if (m_moveTarget == null)
 			return;
 		
-		if (Vector3.Distance (transform.position, m_moveTarget.transform.position) <= m_reachDistance) {
-			Destroy (gameObject);
+		if (Vector3.Distance (transform.position, m_moveTarget.transform.position) <= m_reachDistance)
+		{
+			gameObject.SetActive(false);
 			return;
 		}
 

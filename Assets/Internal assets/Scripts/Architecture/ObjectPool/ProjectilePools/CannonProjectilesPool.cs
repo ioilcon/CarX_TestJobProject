@@ -1,17 +1,18 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class CannonProjectilesPool : MonoBehaviour
+namespace Internal_assets.Scripts.Architecture.ObjectPool.ProjectilePools
 {
-    [SerializeField] private CannonProjectile projectilePrefab;
-    [SerializeField] private int poolSize = 10;
-    [SerializeField] private bool autoExpand;
-
-    public ObjectPool<CannonProjectile> Pool { get; private set; }
-
-    private void Start()
+    public class CannonProjectilesPool : MonoBehaviour
     {
-        Pool = new ObjectPool<CannonProjectile>(projectilePrefab, poolSize, autoExpand, transform);
+        [SerializeField] private CannonProjectile projectilePrefab;
+        [SerializeField] private int poolSize = 10;
+        [SerializeField] private bool autoExpand;
+
+        public ObjectPool<CannonProjectile> Pool { get; private set; }
+
+        private void Awake()
+        {
+            Pool = new ObjectPool<CannonProjectile>(projectilePrefab, poolSize, autoExpand, transform);
+        }
     }
 }

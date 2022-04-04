@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class GuidedProjectilesPool : MonoBehaviour
+namespace Internal_assets.Scripts.Architecture.ObjectPool.ProjectilePools
 {
-    [SerializeField] private GuidedProjectile projectilePrefab;
-    [SerializeField] private int poolSize = 10;
-    [SerializeField] private bool autoExpand;
-
-    public ObjectPool<GuidedProjectile> Pool { get; private set; }
-
-    private void Start()
+    public class GuidedProjectilesPool : MonoBehaviour
     {
-        Pool = new ObjectPool<GuidedProjectile>(projectilePrefab, poolSize, autoExpand, transform);
+        [SerializeField] private GuidedProjectile projectilePrefab;
+        [SerializeField] private int poolSize = 10;
+        [SerializeField] private bool autoExpand;
+
+        public ObjectPool<GuidedProjectile> Pool { get; private set; }
+
+        private void Awake()
+        {
+            Pool = new ObjectPool<GuidedProjectile>(projectilePrefab, poolSize, autoExpand, transform);
+        }
     }
 }

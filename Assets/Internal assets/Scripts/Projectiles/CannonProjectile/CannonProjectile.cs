@@ -33,7 +33,7 @@ public class CannonProjectile : MonoBehaviour {
 
 		monster.m_hp -= m_damage;
 		if (monster.m_hp <= 0) {
-			Destroy (monster.gameObject);
+			monster.gameObject.SetActive(false);
 		}
 		
 		this.gameObject.SetActive(false);

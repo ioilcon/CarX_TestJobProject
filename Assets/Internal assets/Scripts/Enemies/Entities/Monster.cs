@@ -14,7 +14,7 @@ public class Monster : MonoBehaviour {
 		m_hp = m_maxHP;
 	}
 
-	void Update () {
+	void FixedUpdate () {
 		if (m_moveTarget == null)
 			return;
 		

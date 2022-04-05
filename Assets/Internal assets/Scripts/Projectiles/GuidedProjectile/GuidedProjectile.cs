@@ -7,9 +7,8 @@ public class GuidedProjectile : MonoBehaviour {
 	public float m_speed = 0.2f;
 	public int m_damage = 10;
 
-	void Update () {
+	void FixedUpdate () {
 		if (m_target == null) {
-			Destroy (gameObject);
 			this.gameObject.SetActive(false);
 			return;
 		}

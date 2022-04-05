@@ -168,6 +168,10 @@ PrefabInstance:
       propertyPath: m_shootPoint
       value: 
       objectReference: {fileID: 1262217986}
+    - target: {fileID: 11480962, guid: 59e6d8e8602973b448a2f2eddd7afee0, type: 3}
+      propertyPath: trajectoryType
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 19867354, guid: 59e6d8e8602973b448a2f2eddd7afee0, type: 3}
       propertyPath: InitialModule.startSizeY.minMaxState
       value: 3

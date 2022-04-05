@@ -16,7 +16,7 @@ namespace Internal_assets.Scripts.Enemies.Spawners
 			_pool = gameObject.GetComponent<CapsuleEnemyPool>().Pool;
 		}
 	
-		void Update () {
+		void FixedUpdate () {
 			if (Time.time > m_lastSpawn + m_interval) {
 				var newMonster = _pool.GetFreeElement();
 				newMonster.transform.position = this.transform.position;

@@ -16,14 +16,14 @@ public class CannonProjectile : MonoBehaviour {
 	}
 
 	void Update () {
-		var translation = transform.forward * m_speed;
+		//var translation = transform.forward * m_speed;
 		_currentWickLength -= Time.deltaTime;
 		if (_currentWickLength < 0)
 		{
 			_currentWickLength = wickLength;
 			this.gameObject.SetActive(false);
 		}
-		transform.Translate (translation);
+		//transform.Translate (translation);
 	}
 
 	void OnTriggerEnter(Collider other) {

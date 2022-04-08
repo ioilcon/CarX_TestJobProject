@@ -101,32 +101,33 @@ namespace Internal_assets.Scripts.Towers.CannonTower
 
 			float radAngleTan = (targetY + (g * shootTime * shootTime / 2)) / targetX;
 			float degAngle = Mathf.Atan(radAngleTan) * 180 / Mathf.PI;
-			float shootVelocity = targetX / (shootTime * Mathf.Cos(degAngle / 180 * Mathf.PI));
-			var aimVector = new Vector3(fromToXZ.x * Mathf.Cos(Mathf.Atan(radAngleTan)), fromToXZ.x * Mathf.Sin(Mathf.Atan(radAngleTan)) + fromToXZ.z * Mathf.Sin(Mathf.Atan(radAngleTan)), fromToXZ.z * Mathf.Cos(Mathf.Atan(radAngleTan)));
 			
+			var aimVector = Quaternion.Euler(degAngle, 0.0f, 0.0f) * fromToXZ;
+			
+			Debug.Log("fromToXZ: " + fromToXZ + "\nquat: " + Quaternion.Euler(degAngle, 0.0f, 0.0f) + "\naimVector: " + aimVector + "\n-------------------------");
 			Debug.DrawRay(transform.position, transform.forward * 7, Color.yellow);
 			Debug.DrawRay(transform.position, fromToXZ, Color.red);
 			Debug.DrawRay(cannonTransform.position, cannonTransform.forward * 7, Color.green);
 			Debug.DrawRay(cannonTransform.position, aimVector * 7, Color.magenta);
+			Debug.Log( "Needed angle: " + degAngle +"\nReal angle: " + Vector3.Angle(fromToXZ, aimVector));
 			
 			transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(fromToXZ),
 				aimSpeed * Time.deltaTime);
-			//cannonTransform.rotation = Quaternion.RotateTowards(cannonTransform.rotation,
-			//	Quaternion.LookRotation(aimVector), aimSpeed * Time.deltaTime);
+			cannonTransform.rotation = Quaternion.RotateTowards(cannonTransform.rotation,
+				Quaternion.LookRotation(aimVector), aimSpeed * Time.deltaTime);
 
+			
+			
 			var angleToTarget = Vector3.Angle(this.transform.forward, fromToXZ);
 			var angleToAim = Vector3.Angle(cannonTransform.forward, aimVector);
-			Debug.Log("Target locked? " + isTargetLocked + "\nAngle to target: " + angleToTarget + "\n--------------------------------------------------");
 			isTargetLocked = false;
 			isAimed = false;
 			if (angleToTarget < 1.0f)
 			{
-				Debug.Log("Target locked!");
 				isTargetLocked = true;
 			}
 			if (angleToAim < 1.0f)
 			{
-				Debug.Log("Aimed!");
 				isAimed = true;
 			}
 		}

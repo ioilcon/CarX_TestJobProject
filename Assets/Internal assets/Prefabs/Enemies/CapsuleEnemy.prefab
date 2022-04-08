@@ -126,6 +126,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_moveTarget: {fileID: 3839953819447357780, guid: 3b3b530af94567643972af11046b57f9,
     type: 3}
-  m_speed: 0.1
+  m_speed: 0.05
   m_maxHP: 30
   m_hp: 0

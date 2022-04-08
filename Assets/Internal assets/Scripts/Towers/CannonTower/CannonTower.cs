@@ -74,7 +74,10 @@ namespace Internal_assets.Scripts.Towers.CannonTower
 					projectile.currentWickLength = projectile.wickLength;
 					//Debug.DrawLine(predictedMonsterPosition, m_shootPoint.position, Color.red, shootTime);
 					projectile.GetComponent<Rigidbody>().velocity = cannonTransform.forward * shootVelocity;
+					shootTime -= Time.deltaTime;
+					if (shootTime < 1.0f) shootTime = 5.0f;
 					isTargetLocked = false;
+					isAimed = false;
 
 					//var projectileTransform = projectile.transform;
 					//projectileTransform.position = m_shootPoint.position;
@@ -99,10 +102,12 @@ namespace Internal_assets.Scripts.Towers.CannonTower
 			float targetY = Mathf.Abs(fromTo.y);
 			float g = Physics.gravity.y;
 
-			float radAngleTan = (targetY + (g * shootTime * shootTime / 2)) / targetX;
-			float degAngle = Mathf.Atan(radAngleTan) * 180 / Mathf.PI;
-			
-			var aimVector = Quaternion.Euler(degAngle, 0.0f, 0.0f) * fromToXZ;
+			float angleTan = (targetY + (g * shootTime * shootTime / 2)) / targetX;
+			float degAngle = Mathf.Atan(angleTan) * 180 / Mathf.PI;
+
+			var aimVector = transform.forward + Vector3.up * Mathf.Abs(angleTan);
+			//var aimVector = fromToXZ + Vector3.up * Mathf.Sqrt(Mathf.Pow(angleTan, 2) * Mathf.Pow(fromToXZ.magnitude, 2));
+			//var aimVector = Quaternion.Euler(degAngle, 0.0f, 0.0f) * fromToXZ;
 			
 			Debug.Log("fromToXZ: " + fromToXZ + "\nquat: " + Quaternion.Euler(degAngle, 0.0f, 0.0f) + "\naimVector: " + aimVector + "\n-------------------------");
 			Debug.DrawRay(transform.position, transform.forward * 7, Color.yellow);
@@ -122,11 +127,11 @@ namespace Internal_assets.Scripts.Towers.CannonTower
 			var angleToAim = Vector3.Angle(cannonTransform.forward, aimVector);
 			isTargetLocked = false;
 			isAimed = false;
-			if (angleToTarget < 1.0f)
+			if (angleToTarget < 0.1f)
 			{
 				isTargetLocked = true;
 			}
-			if (angleToAim < 1.0f)
+			if (angleToAim < 0.1f)
 			{
 				isAimed = true;
 			}

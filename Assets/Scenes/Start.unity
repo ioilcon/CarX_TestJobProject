@@ -162,7 +162,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 11480962, guid: 59e6d8e8602973b448a2f2eddd7afee0, type: 3}
       propertyPath: m_range
-      value: 10
+      value: 15
       objectReference: {fileID: 0}
     - target: {fileID: 11480962, guid: 59e6d8e8602973b448a2f2eddd7afee0, type: 3}
       propertyPath: m_shootPoint
@@ -174,7 +174,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 11480962, guid: 59e6d8e8602973b448a2f2eddd7afee0, type: 3}
       propertyPath: shootTime
-      value: 1.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 11480962, guid: 59e6d8e8602973b448a2f2eddd7afee0, type: 3}
       propertyPath: cannonTransform
@@ -182,7 +182,7 @@ PrefabInstance:
       objectReference: {fileID: 708429126}
     - target: {fileID: 11480962, guid: 59e6d8e8602973b448a2f2eddd7afee0, type: 3}
       propertyPath: m_shootInterval
-      value: 3
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 11480962, guid: 59e6d8e8602973b448a2f2eddd7afee0, type: 3}
       propertyPath: rotateSpeed
@@ -433,7 +433,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbdcd4a28493d6543aa0ab3dec6c1d8e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_interval: 5
+  m_interval: 10
 --- !u!4 &780892721
 Transform:
   m_ObjectHideFlags: 0

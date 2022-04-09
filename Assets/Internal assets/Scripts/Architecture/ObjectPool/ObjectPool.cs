@@ -12,6 +12,7 @@ namespace Internal_assets.Scripts.Architecture.ObjectPool
         private bool AutoExpand { get; }
         private Transform Container {get; }
     
+        //TODO: реализовать через стек
         private List<T> _pool;
     
         public ObjectPool(T prefab, int poolSize, bool autoExpand, Transform container = null)

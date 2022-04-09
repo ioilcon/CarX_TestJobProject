@@ -1,16 +1,17 @@
 ﻿using Internal_assets.Scripts.Architecture.ObjectPool;
 using Internal_assets.Scripts.Architecture.ObjectPool.ProjectilePools;
+using Internal_assets.Scripts.Enemies.Entities;
+using Internal_assets.Scripts.Projectiles.GuidedProjectile;
 using UnityEngine;
 
 namespace Internal_assets.Scripts.Towers.SimpleTower
 {
 	public class SimpleTower : MonoBehaviour {
-		public float m_shootInterval = 0.5f;
-		public float m_range = 4f;
-		public GameObject m_projectilePrefab;
+		public float shootInterval = 0.5f;
+		public float range = 4f;
 		private ObjectPool<GuidedProjectile> _pool;
 
-		private float m_lastShotTime = -0.5f;
+		private float _lastShotTime = 0.0f;
 	
 		private void Start()
 		{
@@ -18,24 +19,21 @@ namespace Internal_assets.Scripts.Towers.SimpleTower
 		}
 	
 		void Update () {
-			if (m_projectilePrefab == null)
-				return;
-
+			_lastShotTime += Time.deltaTime;
 			foreach (var monster in FindObjectsOfType<Monster>()) {
-				if (Vector3.Distance (transform.position, monster.transform.position) > m_range)
+				if (Vector3.Distance (transform.position, monster.transform.position) > range)
 					continue;
 
-				if (m_lastShotTime + m_shootInterval > Time.time)
-					continue;
+				if (_lastShotTime > shootInterval)
+				{
+					var projectile = _pool.GetFreeElement();
+					var projectileTransform = projectile.transform;
+					projectileTransform.position = transform.position + Vector3.up * 1.5f;
+					projectileTransform.rotation = Quaternion.identity;
+					projectile.GetComponent<GuidedProjectile>().target = monster.gameObject;
 
-				// shot
-				var projectile = _pool.GetFreeElement();
-				var projectileTransform = projectile.transform;
-				projectileTransform.position = transform.position + Vector3.up * 1.5f;
-				projectileTransform.rotation = Quaternion.identity;
-				projectile.GetComponent<GuidedProjectile>().m_target = monster.gameObject;
-
-				m_lastShotTime = Time.time;
+					_lastShotTime = 0.0f;
+				}
 			}
 	
 		}

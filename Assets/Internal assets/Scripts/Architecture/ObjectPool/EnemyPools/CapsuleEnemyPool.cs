@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Internal_assets.Scripts.Enemies.Entities;
+using UnityEngine;
 
 namespace Internal_assets.Scripts.Architecture.ObjectPool.EnemyPools
 {

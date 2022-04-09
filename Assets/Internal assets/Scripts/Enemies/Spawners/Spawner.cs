@@ -1,28 +1,31 @@
 ﻿using Internal_assets.Scripts.Architecture.ObjectPool;
 using Internal_assets.Scripts.Architecture.ObjectPool.EnemyPools;
-using Internal_assets.Scripts.Architecture.ObjectPool.ProjectilePools;
+using Internal_assets.Scripts.Enemies.Entities;
 using UnityEngine;
 
 namespace Internal_assets.Scripts.Enemies.Spawners
 {
 	public class Spawner : MonoBehaviour {
-		public float m_interval = 3;
+		
+		public float spawnInterval = 5;
+		
 		private ObjectPool<Monster> _pool;
-	
-		private float m_lastSpawn = -1;
+		private float _lastSpawn = 0.0f;
 
 		private void Start()
 		{
 			_pool = gameObject.GetComponent<CapsuleEnemyPool>().Pool;
 		}
 	
-		void FixedUpdate () {
-			if (Time.time > m_lastSpawn + m_interval) {
+		void FixedUpdate ()
+		{
+			_lastSpawn += Time.deltaTime;
+			if (_lastSpawn > spawnInterval) {
 				var newMonster = _pool.GetFreeElement();
-				newMonster.transform.position = this.transform.position;
-				newMonster.m_hp = newMonster.m_maxHP;
+				newMonster.transform.position = transform.position;
+				newMonster.currentHp = newMonster.maxHp;
 
-				m_lastSpawn = Time.time;
+				_lastSpawn %= spawnInterval;
 			}
 		}
 	}

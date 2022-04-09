@@ -1,35 +1,33 @@
-﻿using System;
+﻿using Internal_assets.Scripts.Enemies.Entities;
 using UnityEngine;
-using System.Collections;
 
-public class GuidedProjectile : MonoBehaviour {
-	public GameObject m_target;
-	public float m_speed = 0.2f;
-	public int m_damage = 10;
+namespace Internal_assets.Scripts.Projectiles.GuidedProjectile
+{
+	public class GuidedProjectile : MonoBehaviour {
+		public GameObject target;
+		public float speed = 0.2f;
+		public int damage = 10;
 
-	void FixedUpdate () {
-		if (m_target == null) {
-			this.gameObject.SetActive(false);
-			return;
+		void FixedUpdate () {
+			if (target == null) {
+				gameObject.SetActive(false);
+				return;
+			}
+
+			var translation = target.transform.position - transform.position;
+			if (translation.magnitude > speed) {
+				translation = translation.normalized * speed;
+			}
+			transform.Translate (translation);
 		}
 
-		var translation = m_target.transform.position - transform.position;
-		if (translation.magnitude > m_speed) {
-			translation = translation.normalized * m_speed;
+		void OnTriggerEnter(Collider other) {
+			var monster = other.gameObject.GetComponent<Monster> ();
+			if (monster == null)
+				return;
+
+			monster.currentHp -= damage;
+			gameObject.SetActive(false);
 		}
-		transform.Translate (translation);
-	}
-
-	void OnTriggerEnter(Collider other) {
-		var monster = other.gameObject.GetComponent<Monster> ();
-		if (monster == null)
-			return;
-
-		monster.m_hp -= m_damage;
-		if (monster.m_hp <= 0) {
-			monster.gameObject.SetActive(false);
-		}
-
-		this.gameObject.SetActive(false);
 	}
 }

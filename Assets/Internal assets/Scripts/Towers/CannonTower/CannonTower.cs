@@ -1,21 +1,22 @@
 ﻿using Internal_assets.Scripts.Architecture.ObjectPool;
 using Internal_assets.Scripts.Architecture.ObjectPool.ProjectilePools;
+using Internal_assets.Scripts.Enemies.Entities;
+using Internal_assets.Scripts.Projectiles.CannonProjectile;
 using UnityEngine;
 
 namespace Internal_assets.Scripts.Towers.CannonTower
 {
 	public class CannonTower : MonoBehaviour {
-		public float m_shootInterval = 0.5f;
-		public float m_range = 4f;
-		public GameObject m_projectilePrefab;
+		public float shootInterval = 0.5f;
+		public float range = 4f;
 		[SerializeField] public Transform cannonTransform;
-	
-		private ObjectPool<CannonProjectile> _pool;
 		[SerializeField] private float aimSpeed = 10.0f;
 		[SerializeField] private float shootTime = 3.0f;
-		private float m_lastShotTime = -0.5f;
-		private bool isTargetLocked = false;
-		private bool isAimed = false;
+		
+		private ObjectPool<CannonProjectile> _pool;
+		private float _lastShotTime = 0.0f;
+		private bool _isTargetLocked;
+		private bool _isAimed;
 	
 		private void Start()
 		{
@@ -23,118 +24,86 @@ namespace Internal_assets.Scripts.Towers.CannonTower
 		}
 
 		void FixedUpdate () {
-			if (m_projectilePrefab == null || cannonTransform == null)
+			if (cannonTransform == null)
 				return;
 
+			_lastShotTime += Time.deltaTime;
 			foreach (var monster in FindObjectsOfType<Monster>()) {
-				if (Vector3.Distance (transform.position, monster.transform.position) > m_range)
+				if (Vector3.Distance (transform.position, monster.transform.position) > range)
 					continue;
 
-				AimOnTarget(monster);
-				
-				if (m_lastShotTime + m_shootInterval > Time.time)
-					continue;
+				float shootVelocity = AimOnTarget(monster);
 
-				var monsterTarget = monster.m_moveTarget.transform.position;
-				var monsterMove = (monsterTarget - monster.transform.position).normalized * monster.m_speed * 50 * shootTime;
-				var predictedMonsterPosition = monster.transform.position + monsterMove;
-
-				// shot
-				Vector3 fromTo = predictedMonsterPosition - cannonTransform.position;
-				Vector3 fromToXZ = new Vector3(fromTo.x, 0.0f, fromTo.z);
-				
-				float targetX = fromToXZ.magnitude;
-				float targetY = Mathf.Abs(fromTo.y);
-				float g = Physics.gravity.y;
-
-				float radAngleTan = (targetY + (g * shootTime * shootTime / 2)) / targetX;
-				float degAngle = Mathf.Atan(radAngleTan) * 180 / Mathf.PI;
-				float shootVelocity = targetX / (shootTime * Mathf.Cos(degAngle / 180 * Mathf.PI));
-
-				//float dist = (shootVelocity * shootVelocity) / (g * targetX);
-				//if (trajectoryType == TrajectoryType.Mounted)
-				//	radAngle = dist - Mathf.Sqrt(1 + dist * dist - dist * 2 * targetY / targetX);
-				//if (trajectoryType == TrajectoryType.Flatbed)
-				//	radAngle = dist + Mathf.Sqrt(1 + dist * dist - dist * 2 * targetY / targetX);
-				
-				//transform.rotation = Quaternion.LookRotation(fromToXZ, Vector3.up);
-				//transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(fromToXZ), rotateSpeed * Time.deltaTime);
-				//cannonTransform.rotation = Quaternion.LookRotation(fromToXZ, Vector3.up);
-				//cannonTransform.Rotate(degAngle, 0.0f, 0.0f);
-				//m_shootPoint.rotation = Quaternion.LookRotation(fromToXZ, Vector3.up);
-				//m_shootPoint.Rotate(degAngle, 0.0f, 0.0f);
-				
-				if (isTargetLocked && isAimed)
+				if (_lastShotTime > shootInterval)
 				{
-					var projectile = _pool.GetFreeElement();
-					//Debug.DrawLine(predictedMonsterPosition + Vector3.down * 10, predictedMonsterPosition + Vector3.up * 2, Color.red, shootTime);
-					projectile.transform.SetParent(null);
-					projectile.transform.position = cannonTransform.position;
-					projectile.transform.rotation = cannonTransform.rotation;
-					projectile.currentWickLength = projectile.wickLength;
-					//Debug.DrawLine(predictedMonsterPosition, m_shootPoint.position, Color.red, shootTime);
-					projectile.GetComponent<Rigidbody>().velocity = cannonTransform.forward * shootVelocity;
-					shootTime -= Time.deltaTime;
-					if (shootTime < 1.0f) shootTime = 5.0f;
-					isTargetLocked = false;
-					isAimed = false;
+					if (_isTargetLocked && _isAimed)
+					{
+						var projectile = _pool.GetFreeElement();
+						projectile.transform.SetParent(null);
+						projectile.transform.position = cannonTransform.position;
+						projectile.transform.rotation = cannonTransform.rotation;
+						projectile.currentWickLength = projectile.wickLength;
+						projectile.GetComponent<Rigidbody>().velocity = cannonTransform.forward * shootVelocity;
 
-					//var projectileTransform = projectile.transform;
-					//projectileTransform.position = m_shootPoint.position;
-					//projectileTransform.rotation = m_shootPoint.rotation;
-
-					m_lastShotTime = Time.time;
+						_lastShotTime = 0;
+						_isTargetLocked = false;
+						_isAimed = false;
+					}
 				}
 			}
 
 		}
 
-		private void AimOnTarget(Monster monster)
+		private float AimOnTarget(Monster monster)
 		{
-			var monsterTarget = monster.m_moveTarget.transform.position;
-			var monsterMove = (monsterTarget - monster.transform.position).normalized * monster.m_speed * 50 * shootTime;
-			var predictedMonsterPosition = monster.transform.position + monsterMove;
+			// Упреждение выстрела. Вычисляется положение цели во время прилёта ядра
+			// Примерно 50 "шагов" в секунду из-за перемещения цели через FixedUpdate()
+			var monsterPosition = monster.transform.position;
+			var monsterMove = (monster.moveTarget.transform.position - monsterPosition).normalized *
+			                  monster.moveSpeed * 50 * shootTime;
+			var predictedMonsterPosition = monsterPosition + monsterMove;
 
 			Vector3 fromTo = predictedMonsterPosition - cannonTransform.position;
+			// направление наобходимого для попадания поворота башни
 			Vector3 fromToXZ = new Vector3(fromTo.x, 0.0f, fromTo.z);
 
+			// Необходимые параметры для вычисления угла и скорости снаряда
 			float targetX = fromToXZ.magnitude;
 			float targetY = Mathf.Abs(fromTo.y);
 			float g = Physics.gravity.y;
 
 			float angleTan = (targetY + (g * shootTime * shootTime / 2)) / targetX;
-			float degAngle = Mathf.Atan(angleTan) * 180 / Mathf.PI;
+			float degAngle = Mathf.Atan(angleTan) * Mathf.Rad2Deg;
 
+			// направление необходимого для попадания подъёма ствола пушки
 			var aimVector = transform.forward + Vector3.up * Mathf.Abs(angleTan);
-			//var aimVector = fromToXZ + Vector3.up * Mathf.Sqrt(Mathf.Pow(angleTan, 2) * Mathf.Pow(fromToXZ.magnitude, 2));
-			//var aimVector = Quaternion.Euler(degAngle, 0.0f, 0.0f) * fromToXZ;
 			
-			Debug.Log("fromToXZ: " + fromToXZ + "\nquat: " + Quaternion.Euler(degAngle, 0.0f, 0.0f) + "\naimVector: " + aimVector + "\n-------------------------");
 			Debug.DrawRay(transform.position, transform.forward * 7, Color.yellow);
 			Debug.DrawRay(transform.position, fromToXZ, Color.red);
 			Debug.DrawRay(cannonTransform.position, cannonTransform.forward * 7, Color.green);
 			Debug.DrawRay(cannonTransform.position, aimVector * 7, Color.magenta);
-			Debug.Log( "Needed angle: " + degAngle +"\nReal angle: " + Vector3.Angle(fromToXZ, aimVector));
 			
+			// поворот башни и поворот ствола пушки
 			transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(fromToXZ),
 				aimSpeed * Time.deltaTime);
 			cannonTransform.rotation = Quaternion.RotateTowards(cannonTransform.rotation,
 				Quaternion.LookRotation(aimVector), aimSpeed * Time.deltaTime);
 
+			_isTargetLocked = false;
+			_isAimed = false;
 			
-			
+			// проверка, захвачена ли цель и навелась ли пушка
 			var angleToTarget = Vector3.Angle(this.transform.forward, fromToXZ);
 			var angleToAim = Vector3.Angle(cannonTransform.forward, aimVector);
-			isTargetLocked = false;
-			isAimed = false;
 			if (angleToTarget < 0.1f)
 			{
-				isTargetLocked = true;
+				_isTargetLocked = true;
 			}
 			if (angleToAim < 0.1f)
 			{
-				isAimed = true;
+				_isAimed = true;
 			}
+			return targetX / (shootTime * Mathf.Cos(degAngle / 180 * Mathf.PI));
 		}
 
 	}

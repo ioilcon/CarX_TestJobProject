@@ -36,9 +36,12 @@ namespace Internal_assets.Scripts.Towers.SimpleTower
 			}
 			else
 			{
-				if (Vector3.Distance(transform.position, _target.transform.position) > range)
+				if (Vector3.Distance(transform.position, _target.transform.position) > range ||
+				    !_target.isActiveAndEnabled)
+				{
 					_target = null;
-				return;
+					return;
+				}
 			}
 				//foreach (var monster in FindObjectsOfType<Monster>()) {
 				//if (Vector3.Distance (transform.position, monster.transform.position) > range)

@@ -12,6 +12,7 @@ namespace Internal_assets.Scripts.Towers.SimpleTower
 		private ObjectPool<GuidedProjectile> _pool;
 
 		private float _lastShotTime = 0.0f;
+		private Monster _target = null;
 	
 		private void Start()
 		{
@@ -20,9 +21,28 @@ namespace Internal_assets.Scripts.Towers.SimpleTower
 	
 		void Update () {
 			_lastShotTime += Time.deltaTime;
-			foreach (var monster in FindObjectsOfType<Monster>()) {
-				if (Vector3.Distance (transform.position, monster.transform.position) > range)
-					continue;
+			if (_target == null)
+			{
+				var monsters = FindObjectsOfType<Monster>();
+				foreach (var monster in monsters)
+				{
+					if (Vector3.Distance(transform.position, monster.transform.position) < range)
+					{
+						_target = monster;
+					}
+				}
+				if (_target == null)
+					return;
+			}
+			else
+			{
+				if (Vector3.Distance(transform.position, _target.transform.position) > range)
+					_target = null;
+				return;
+			}
+				//foreach (var monster in FindObjectsOfType<Monster>()) {
+				//if (Vector3.Distance (transform.position, monster.transform.position) > range)
+				//	continue;
 
 				if (_lastShotTime > shootInterval)
 				{
@@ -30,11 +50,11 @@ namespace Internal_assets.Scripts.Towers.SimpleTower
 					var projectileTransform = projectile.transform;
 					projectileTransform.position = transform.position + Vector3.up * 1.5f;
 					projectileTransform.rotation = Quaternion.identity;
-					projectile.GetComponent<GuidedProjectile>().target = monster.gameObject;
+					projectile.GetComponent<GuidedProjectile>().target = _target.gameObject;
 
 					_lastShotTime = 0.0f;
 				}
-			}
+			//}
 	
 		}
 	}

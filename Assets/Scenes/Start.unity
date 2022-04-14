@@ -762,7 +762,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shootInterval: 0.5
-  range: 4
+  range: 15
 --- !u!114 &1920609369
 MonoBehaviour:
   m_ObjectHideFlags: 0

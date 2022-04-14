@@ -13,6 +13,10 @@ namespace Internal_assets.Scripts.Projectiles.GuidedProjectile
 				gameObject.SetActive(false);
 				return;
 			}
+			if (!target.GetComponent<Monster>().isActiveAndEnabled)
+			{
+				gameObject.SetActive(false);
+			}
 
 			var translation = target.transform.position - transform.position;
 			if (translation.magnitude > speed) {

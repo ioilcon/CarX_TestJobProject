@@ -17,6 +17,7 @@ namespace Internal_assets.Scripts.Towers.CannonTower
 		private float _lastShotTime = 0.0f;
 		private bool _isTargetLocked;
 		private bool _isAimed;
+		private Monster _target = null;
 	
 		private void Start()
 		{
@@ -28,11 +29,30 @@ namespace Internal_assets.Scripts.Towers.CannonTower
 				return;
 
 			_lastShotTime += Time.deltaTime;
-			foreach (var monster in FindObjectsOfType<Monster>()) {
-				if (Vector3.Distance (transform.position, monster.transform.position) > range)
-					continue;
+			
+			if (_target == null)
+			{
+				var monsters = FindObjectsOfType<Monster>();
+				foreach (var monster in monsters)
+				{
+					if (Vector3.Distance(transform.position, monster.transform.position) < range)
+					{
+						_target = monster;
+					}
+				}
+				if (_target == null)
+					return;
+			}
+			else if (Vector3.Distance(transform.position, _target.transform.position) > range || !_target.isActiveAndEnabled) {
+				_target = null;
+				return;
+			}
+			
+			//foreach (var monster in FindObjectsOfType<Monster>()) {
+			//	if (Vector3.Distance (transform.position, monster.transform.position) > range)
+			//		continue;
 
-				float shootVelocity = AimOnTarget(monster);
+				float shootVelocity = AimOnTarget(_target);
 
 				if (_lastShotTime > shootInterval)
 				{
@@ -50,7 +70,7 @@ namespace Internal_assets.Scripts.Towers.CannonTower
 						_isAimed = false;
 					}
 				}
-			}
+			//}
 
 		}
 
